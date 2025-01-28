@@ -1,6 +1,6 @@
-# Techcareer Frontend Full Stack- Dockerize
-[Hamit Mizrak, GitHub Repo](https://github.com/hamitmizrak/2025_techcareer_frontend_fullstack_1.git)
+# Techcareer.net Frontend Full Stack- Dockerize
 [This Repo](https://github.com/ErenKilisli/fullstack-frontend)
+---
 [Mongo Database]()
 ---
 
@@ -183,8 +183,11 @@ Global node_modules: C:\Users\Hamit-Mizrak\AppData\Roaming\npm\node_modules
 ```sh
 npm update     # package.json içindeki dosyalardaki paketleri günceller
 npm outdated   # Projede eskiyen veya güncellenmesi gereken paketleride gösterir
-npm audit      # BAğımlılıkların gücenlik analizleri rapor eder
+npm audit      # Bağımlılıkların gücenlik analizleri rapor eder
 npm audit fix  # Belirlenen güvenlik açıklarını otomatik olarak düzeltir.
+npm dedupe     # Bağımlılıkların tekrarlanan kopyalarını temizler.
+npm info <paket-adi> #  Belirli paketin detaylı bilgileri gösterir
+npm cache clean --force # npm önbelleğini temizler
 ```
 ---
 
