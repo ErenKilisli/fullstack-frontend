@@ -1,0 +1,35 @@
+{
+  "name": "frontend_fullstack",
+  "version": "1.0.0",
+  "description": "html5, css3, js, esj, mongo, docker, bootstrap",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ErenKilisli/fullstack-frontend.git"
+  },
+  "keywords": [
+    "html5",
+    "css3",
+    "js"
+  ],
+  "author": "Ibrahim Eren Kilisli",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ErenKilisli/fullstack-frontend/issues"
+  },
+  "homepage": "https://github.com/ErenKilisli/fullstack-frontend#readme",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "compression": "^1.7.5",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "csurf": "^1.10.0",
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0"
+  }
+}
