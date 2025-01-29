@@ -2,8 +2,14 @@
 [This Repo](https://github.com/ErenKilisli/fullstack-frontend)
 ---
 [Mongo Database]()
+[Font Awesome](https://fontawesome.com/search?ic=free)
+[Google Font](https://fonts.google.com/selection/embed)
+[Bootstrap](https://getbootstrap.com/)
+[Box Shadow Online](https://cssgenerator.pl/en/box-shadow-generator/)
 ---
 
+# Typescript başlat
+npm run dev:paralel
 ## Version
 ```sh
 code .
