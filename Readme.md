@@ -10,6 +10,7 @@
 
 # Typescript başlat
 npm run dev:paralel
+
 ## Version
 ```sh
 code .
