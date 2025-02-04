@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Admin Page</title>
+    <title>NodeJS, MongoDB, Rest API, jQuery</title>
     <!-- for language  -->
     <meta charset="utf-8" />
 
@@ -30,73 +30,105 @@
 
     <!-- External css -->
     <!-- NOT: `/css/styles.css` için  public dizininde olması gerekiyor -->
-    <link rel="stylesheet" href="/admin/css/blog.css" />
+    <link rel="stylesheet" href="/css/style.css" />
   </head>
 
   <body class="container">
     <!-- start codes -->
 
-    <h6 class="text-center text-uppercase text-primary display-5">Admin Blog Sayfası</h6>
-    <p><%=csrfToken %></p>
+    <h1 class="text-center text-uppercase text-primary">Blog Sayfası</h1>
+    <p><%= csrfToken %></p>
 
-    <!-- form#blog-form-id>input#_csrf+(div.form-group.mb-3>span+input#.form-control)*4+div.form-group.mb-3>input.btn.btn-danger{Temizle}+button.btn.btn-primary{Gönder} -->
-    <form action="/blog" method="POST" id="blog-form-id">
-        <!-- CSRF(Cross Site Request Forgery) -->
-        <input type="hidden" name="_csrf" id="_csrf" value="<%= csrfToken %>" > </input>
+    <!-- Blog Form -->
+    <!-- <form id="blog-form"> -->
+    <!-- CSRF (Cross-Site Request Forgery):  action,POST için eklendi -->
+    <form action="/blog" method="POST" id="blog-form">
+      <!-- CSRF (Cross-Site Request Forgery) -->
+      <input type="hidden" name="_csrf" id="_csrf" value="<%= csrfToken %>" />
 
-        <!-- BLOG HEADER -->
-            <div class="form-group mb-3">
-                <span for="header">Header</span>
-                <input type="text" id="header" name="header" class="form-control" placeholder="Blog Başlığı..." autofocus>
-            </div>
+      <!-- BLOG HEADER -->
+      <div class="form-group mb-3">
+        <span for="header">Header</span>
+        <!-- required kaldırdım -->
+        <input
+          type="text"
+          id="header"
+          name="header"
+          class="form-control"
+          placeholder="blog başlığı"
+          autofocus
+        />
+      </div>
 
-            <!-- BLOG CONTENT -->
-            <div class="form-group mb-3">
-                <span for="content">Content</span>
-                <input type="text" id="content" name="content" class="form-control" placeholder="Blog İçeriği..." autofocus>
-            </div>
+      <!-- BLOG CONTENT -->
+      <div class="form-group mb-3">
+        <span for="content" class="form-label">Content</span>
+        <!-- required kaldırdım -->
+        <textarea
+          class="form-control"
+          name="content"
+          id="content"
+          placeholder="blog içeriği"
+          rows="5"
+        ></textarea>
+      </div>
 
-            <!-- BLOG AUTHOR -->
-            <div class="form-group mb-3">
-                <span for="author">Author</span>
-                <input type="text" id="author" name="author" class="form-control" placeholder="Blog Yazarı..." autofocus>
-            </div>
+      <!-- BLOG AUTHOR -->
+      <div class="form-group mb-3">
+        <span for="author">Author</span>
+        <!-- required kaldırdım -->
+        <input
+          type="text"
+          id="author"
+          name="author"
+          class="form-control"
+          placeholder="blog yazarı"
+        />
+      </div>
 
-            <!-- BLOG TAGS -->
-            <div class="form-group mb-3">
-                <span for="tags">TAGS</span>
-                <input type="text" id="tags" name="tags" class="form-control" placeholder="Blog Etiketleri..." autofocus>
-            </div>
+      <!-- BLOG TAGS -->
+      <div class="form-group mb-3">
+        <span for="tags">Tags</span>
+        <!-- required kaldırdım -->
+        <input
+          type="text"
+          id="tags"
+          name="tags"
+          class="form-control"
+          placeholder="blog yazarı"
+        />
+      </div>
 
-        <!-- SUBMIT -->
-            <div class="form-group mb-3">
-                <input type="reset" class="btn btn-danger" value="Temizle"></input>
-                <button type="submit" class="btn btn-primary">Gönder</button>
-            </div>
+      <!-- BLOG BUTTON -->
+      <div class="form-group mb-3">
+        <input type="reset" value="Temizle" class="btn btn-danger" />
+        <button type="submit" class="btn btn-primary">Gönder</button>
+      </div>
     </form>
 
-    <hr>
-    
-    <!-- h2.display-5.text-center.text-primary{Blog List} -->
-    <h2 class="display-5 text-center text-primary text-uppercase ">Blog List</h2>
-    <!-- table#blog-table.table.table-hover.table-striped.table-sm>thead>tr>(th{item-$}*9)^^tbody -->
-    <table id="blog-table-id" class="table table-hover table-striped table-sm">
+    <hr />
+    <h2 class="text-primary">Blog</h2>
+    <!-- table.table.table-hover.table-striped>thead>tr>(th{id})*5 -->
+    <table id="blog-table" class="table table-hover table-striped">
+      <!-- THEAD -->
       <thead>
         <tr>
-          <th>ID</th>
-          <th>HEADER</th>
-          <th>CONTENT</th>
-          <th>AUTHOR</th>
-          <th>TAGS</th>
-          <th>VIEWS</th>
-          <th>STATUS</th>
-          <th>CREATED DATE</th>
-          <th>ACTIONS</th>
+          <th class="text-uppercase">id</th>
+          <th class="text-uppercase">header</th>
+          <th class="text-uppercase">content</th>
+          <th class="text-uppercase">author</th>
+          <th class="text-uppercase">tags</th>
+          <th class="text-uppercase">views</th>
+          <th class="text-uppercase">status</th>
+          <th class="text-uppercase">created date</th>
+          <th class="text-uppercase">Actions</th>
         </tr>
       </thead>
+
+      <!-- TBODY -->
       <tbody></tbody>
     </table>
-
+    <!-- end table -->
 
     <!-- end codes -->
     <!-- Bootstrap JavaScript Libraries -->
@@ -116,7 +148,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <!-- external js -->
-    <!-- NOT: `/css/styles.css` için  public dizininde olması gerekiyor -->
-    <script src="/admin/js/blog.js"></script>
+    <!-- NOT: `/public/js/styles.js` için  public dizininde olması gerekiyor -->
+    <script src="/js/blog.js"></script>
   </body>
 </html>
