@@ -1,15 +1,23 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 // http://localhost:1111/daily/list
-console.info("index.js Server 1111 portunda ayağa kalktı");
+console.info("server.js Server 1111 portunda ayağa kalktı");
+// Bitirme Projesi
+// username
+// password
+// email
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Import
 // Import Express (Express:  Node.js için esnek bir web uygulama çatısını inşa eder)
 // Bu modüllerle beraber HTTP istekleri(request) işleyecek ve istemciye(server) yanıt dönecektir.
-// DİKKAT: index.js  require("express") kullanılır
+// DİKKAT: index.js  require("express") kullanılır 
 // DİKKAT: index.ts  import("express") kullanılır.
 // Express Import
 const express = require("express");
-// Mongoose Import(for Database)
+// Mongoose Import
 const mongoose = require("mongoose");
 // CSRF Import
 const csrf = require("csurf");
@@ -19,8 +27,8 @@ const winston = require("winston"); // Winston logger'ı ekle
 // Helmet Import
 const helmet = require("helmet");
 // Swagger UI
-const swaggerJsDoc = require("swagger-jsdoc");
-const swaggerUi = require("swagger-ui-express");
+// const swaggerJsDoc = require("swagger-jsdoc");
+// const swaggerUi = require("swagger-ui-express");
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // bodyParser Import
 const bodyParser = require("body-parser");
@@ -49,21 +57,48 @@ if (process.env.NODE_ENV !== "production") {
 // username:  hamitmizrak
 // password:  <password>
 // mongodb+srv://hamitmizrak:<password>@offlinenodejscluster.l3itd.mongodb.net/?retryWrites=true&w=majority&appName=OfflineNodejsCluster
+/*
+mongosh
+
+use mydb  // Veritabanınızı kullanın
+db.getUsers()
+
+VEYA
+
+use admin
+db.getUsers()
+
+db.createUser({
+  user: "blogAdmin",
+  pwd: "BlogPass123",
+  roles: [
+    { role: "readWrite", db: "blogDB" } // blogDB üzerinde okuma ve yazma yetkisi
+  ]
+})
+
+
+ */
 // Localhostta MongoDB yüklüyse)
 // Bu proje için docker-compose üzerinden 27017 porta sahip mongodb kurdum
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 // 1.YOL (LOCALHOST)
-const databaseLocalDockerUrl = "mongodb://localhost:27017/blog";
+// .env dosyasındaki bilgilerden bağlantı URL'si oluşturuluyor
+const databaseLocalUrl = process.env.MONGO_USERNAME && process.env.MONGO_PASSWORD
+    ? `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@127.0.0.1:${process.env.MONGO_PORT}/blogDB`
+    : "mongodb://blogAdmin:BlogPass123@127.0.0.1:27017/blogDB";
+// 2.YOL (LOCALHOST)
+const databaseDockerUrl = "mongodb://localhost:27000/blogDB";
 // MongoDB Cloud (username,password)
-// 2.YOL
+// 3.YOL (CLOUD)
 const databaseCloudUrl = "mongodb+srv://hamitmizrak:<password>@offlinenodejscluster.l3itd.mongodb.net/?retryWrites=true&w=majority&appName=OfflineNodejsCluster";
-// MongoDB Cloud (.dotenv)
-// 3.YOL
+// 4.YOL (.dotenv)
 require("dotenv").config();
 // Localhostta MongoDB yüklüyse)
 const databaseCloudUrlDotEnv = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@offlinenodejscluster.l3itd.mongodb.net/?retryWrites=true&w=majority&appName=OfflineNodejsCluster`;
 // Local ve Cloud
 const dataUrl = [
-    databaseLocalDockerUrl,
+    databaseLocalUrl,
     databaseCloudUrl,
     databaseCloudUrlDotEnv,
 ];
@@ -73,139 +108,14 @@ const dataUrl = [
 // 2.YOL
 //mongoose.connect(`${databaseCloudUrl}`, {useNewUrlParser:true, useUnifiedTopology:true}) // Eski MongoDB sürümleride
 mongoose
-    .connect(`${databaseCloudUrl}`)
+    // .connect(`${databaseDockerUrl}`)
+    .connect(`${databaseLocalUrl}`)
     .then(() => {
     console.log("Mongo DB Başarıyla Yüklendi");
 })
     .catch((err) => {
     console.error("Mongo DB Bağlantı Hatası", err);
 });
-// 3.YOL (Docker Üzerinden Mongo DB açılmamıştır)
-/*
-mongoose
-  .connect(`${databaseLocalDockerUrl}`)
-  .then(() => {
-    console.log("Mongo DB Başarıyla Yüklendi");
-    logger.info("Mongo DB Başarıyla Yüklendi..."); //logger: Winston
-  })
-  .catch((err) => {
-    logger.info("Mongo DB Docker Açılmadı"); //logger: Winston
-    console.error("Mongo DB Bağlantı Hatası", err);
-  });
-*/
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// SWAGGER
-// http://localhost:1111/api-docs
-/*
-
-API'lerinizi daha iyi yönetmek ve test etmek için swagger kullanabilirsiniz.
-
-npm install swagger-jsdoc swagger-ui-express
-
-const swaggerJsDoc = require('swagger-jsdoc');
-const swaggerUi = require('swagger-ui-express');
-
-// Swagger ayarları
-const swaggerOptions = {
-  swaggerDefinition: {
-    info: {
-      title: "Blog API",
-      description: "Blog API yönetimi için dökümantasyon",
-      contact: {
-        name: "Developer"
-      },
-      servers: ["http://localhost:5555"]
-    }
-  },
-  apis: ["index.js", "./routes/*.js"], // API tanımları için dosyaları belirtin
-};
-
-const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
-*/
-// Authorize Geliyor
-/*
-const swaggerOptions = {
-    swaggerDefinition: {
-      info: {
-        title: "Blog API",
-        description: "Blog API yönetimi için dökümantasyon",
-        contact: {
-          name: "Developer"
-        },
-        servers: ["http://localhost:1111"]
-      }
-    },
-    apis: ["index.js", "./routes/blog_api_routes.js"], // API tanımları için dosyaları belirtin
-    //apis: ["index.js", "./routes/*.js"], // API tanımları için dosyaları belirtin
-  };
-*/
-const swaggerOptions = {
-    swaggerDefinition: {
-        openapi: "3.0.0",
-        info: {
-            title: "Blog API",
-            description: "Blog API yönetimi için dökümantasyon Author: Yüksek Bilgisayar Mühendisi Hamit Mızrak",
-            version: "1.0.0",
-            contact: {
-                name: "Developer",
-            },
-            servers: [
-                {
-                    url: "http://localhost:1111",
-                },
-            ],
-            // Bearer authentication istemiyorsak securtiy kapat
-        },
-    },
-    apis: ["index.js", "./routes/blog_api_routes.js"], // API tanımları için dosyaları belirtin
-    //apis: ["index.js", "./routes/*.js"], // API tanımları için dosyaları belirtin
-};
-/*
-  Dikkat: No operations defined in spec! Swagger dokümasntasyonları API rotalarını işlemleri doğru yazdık
-  API dosyamızın blog_api.routes.js , Swagger taglarini (JSDoc) olmadığı için
-  
-  LIST
-  /**
-   * @swagger
-   * /blog:
-   *   get:
-   *     summary: Get all blogs
-   *     description: Retrieves a list of all blogs
-   *     responses:
-   *       200:
-   *         description: Successfully retrieved list of blogs
-   */
-// POST
-/*
- * @swagger
- * /blog:
- *   post:
- *     summary: Create a new blog
- *     description: Adds a new blog to the collection
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               header:
- *                 type: string
- *               content:
- *                 type: string
- *               author:
- *                 type: string
- *               tags:
- *                 type: string
- *     responses:
- *       201:
- *         description: Successfully created new blog
- */
-const swaggerDocs = swaggerJsDoc(swaggerOptions);
-// http://localhost:1111/api-docs
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // MIDDLEWARE
 // Middleware'leri dahil et
@@ -235,29 +145,12 @@ app.use(cookieParser());
 // CSRF(Cross-Site Request Forgery) saldırılarına karşı güvenliği sağlar.
 // CSRF tokenlarını çerezler araçılığyla gönderilir.
 const csrfProtection = csrf({ cookie: true });
-// Uygulamada statik dosyaların HTL,CSS,JS,image v.b içerikler sunar.
-// public klasörü, statik doyalar için kök dizin olarak belirlenir.
-// Bu klasörde bulunan dosyalara tarayıcıdan direk erişim sağlanır.
-// Örnek: public klasöründe style.css adlı bir dosya varsa biz buna şu şekilde erişim sağlarız.
-// http://localhost:1111/style.css
-app.use(express.static("public"));
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// EJS(Embedded JavaScript) Görüntüleme motorunu aktifleştirdim
-app.set("view engine", "ejs");
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Express için Log
 const morgan = require("morgan");
 // Morgan Aktifleştirmek
 // Morgan'ı Express.js uygulamasında kullanalım.
 //app.use(morgan('dev')); //dev: kısa ve renkli loglar göster
 app.use(morgan("combined")); //dev: uzun ve renkli loglar göster
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Router (Rotalar)
-const blogRoutes = require("../routes/blog_api_routes");
-const { request } = require("http");
-// http://localhost:1111/admin/blog
-app.use("/admin/blog", blogRoutes);
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // compression:
 // npm install compression
 // Gzip : Verilerin sıkıştırılmasıyla performansı artırmak
@@ -265,7 +158,6 @@ app.use("/admin/blog", blogRoutes);
 // Tüm Http cevaplarını sıkıştırarak gönderilmesini sağlar.
 // const compression = require('compression');
 // app.use(compression);
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Rate Limiting (İstek Sınırlamasını):
 // npm install express-rate-limit
 // DDoS saldırlarına karşı korumayı sağlamak ve sistem performansını artırmak içindir.
@@ -277,15 +169,13 @@ const limiter = rateLimit({
     max: 100, // buy süre zarfında en fazla bu kadar isterk atabilirsiniz.
     message: "İstek sayısı fazla yapıldı, lütfen biraz sonra tekrar deneyiniz",
 });
-app.use("/admin/blog/", limiter);
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+app.use("/blog/", limiter);
 // CORS
 // npm install cors
 // CORS (Cross-Origin Resource Sharing)
 // Eğer API'niz başka portlardan da erişim sağlanacaksa bunu açmamız gerekiyor.
 const cors = require("cors");
 app.use(cors());
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Helmet: Http başlıkalrını güvenli hale getirir ve yaygın saldırı vektörlerini azaltır
 //npm install helmet
 // const helmet = require("helmet");
@@ -293,7 +183,6 @@ app.use(cors());
 app.use(helmet.frameguard({ action: "deny" })); // Clickjacking'e karşı koruma
 app.use(helmet.xssFilter()); // XSS saldırılarına karşı koruma
 app.use(helmet.noSniff()); // MIME sniffing koruması
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // CSRF
 /*
 CSRF (Cross-Site Request Forgery):  Türkçesi Siteler Arası istek Sahteciliğidir.
@@ -302,11 +191,29 @@ işlem yapması halidir.
 Kullanımı: Genellikle kullanıcı, başka bir sitede oturum açmışken, saldırganın tasarladğo kötü niyetli sitelerle veya bağlantılarla
 istem dışı işlemler yapmasına saldırgan yönlendirir.
 Kullanıcı browser üzerinden oturum açtığında ve kimlik doğrulama bilgilerie sahip olduğu sitelerde yapılır.
+
 */
 // npm install csurf
 // npm install cookie-parser
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// STATIC (Ts için public dizini oluşturduk)
+// Uygulamada statik dosyaların HTL,CSS,JS,image v.b içerikler sunar.
+// public klasörü, statik doyalar için kök dizin olarak belirlenir.
+// Bu klasörde bulunan dosyalara tarayıcıdan direk erişim sağlanır.
+// Örnek: public klasöründe style.css adlı bir dosya varsa biz buna şu şekilde erişim sağlarız.
+// http://localhost:1111/style.css
+// app.use(express.static("public"));
+// 📌 Statik Dosya Servisi (index44.html'nin çalışması için)
+const path_1 = __importDefault(require("path"));
+app.use(express.static(path_1.default.join(__dirname, "../public")));
+// 📌 Ana Sayfa (`index44.html`) Yönlendirmesi
+app.get("/", (req, res) => {
+    res.sendFile(path_1.default.join(__dirname, "public", "index.html"));
+});
 // Formu render eden rota ("/")
-app.get("/", csrfProtection, (request, response) => {
+// Anasayfaya yönlendir.
+app.get("/blog/api", csrfProtection, (request, response) => {
     // İstek gövdesinde JSON(Javascript Object Notation) formatında veri göndereceğini belirtir.
     //response.setHeader("Content-Type", "application/json");
     //response.setHeader("Content-Type", "text/plain"); // name Hamit surnameMızrak
@@ -329,14 +236,14 @@ app.get("/", csrfProtection, (request, response) => {
     // Access-Control-Allow-Headers
     // Bu başlıklar, taryıcınının sunucuya göndereceği özel başlıklar göndersin
     response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    response.render("index", { csrfToken: request.csrfToken() });
+    // dist/server.js
+    response.render("blog", { csrfToken: request.csrfToken() });
 });
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Form verilerini işleyen rota
 // DİKKATT: Eğer  blog_api_routes.js post kısmında event.preventDefault(); kapatırsam buraki kodlar çalışır.
 // blog için CSRF koruması eklenmiş POST işlemi
 // app.post("/blog", csrfProtection, (request, response) => {
-app.post("/", csrfProtection, (request, response) => {
+app.post("/blog/api", csrfProtection, (request, response) => {
     const blogData = {
         header: request.body.header,
         content: request.body.content,
@@ -372,25 +279,40 @@ app.post("/", csrfProtection, (request, response) => {
     });
 });
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// EJS(Embedded JavaScript) Görüntüleme motorunu aktifleştirdim
+// views/blog.ejs aktifleştirmek
+app.set("view engine", "ejs");
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Router (Rotalar)
+const blogRoutes = require("../routes/blog_api_routes");
+const { request } = require("http");
+// http://localhost:1111/blog
+app.use("/blog/", blogRoutes);
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 404 Hata sayfası
 app.use((request, response, next) => {
     response.status(404).render("404", { url: request.originalUrl });
 });
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Windowsta 1111 portunu kapatmak
 /*
-  Terminali Yönetici olarak Aç
-  
-  # Çalışan portu gösteriyor
-  netstat -aon | findstr :1111
-  
-  # TCP Protokolü için Portu Kapatma:
-  netsh advfirewall firewall add rule name="Block TCP Port 1111" protocol=TCP dir=in localport=1111 action=block
-  
-  # UDP Protokolü için Portu Kapatma:
-  netsh advfirewall firewall add rule name="Block UDP Port 1111" protocol=UDP dir=in localport=1111 action=block
-  
-  */
+Terminali Yönetici olarak Aç
+
+# Çalışan portu gösteriyor
+netstat -aon | findstr :1111
+
+# TCP Protokolü için Portu Kapatma:
+netsh advfirewall firewall add rule name="Block TCP Port 1111" protocol=TCP dir=in localport=1111 action=block
+
+# UDP Protokolü için Portu Kapatma:
+netsh advfirewall firewall add rule name="Block UDP Port 1111" protocol=UDP dir=in localport=1111 action=block
+
+*/
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Sunucu başlatma
 const port = 1111;
