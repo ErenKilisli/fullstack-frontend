@@ -382,20 +382,8 @@ netsh advfirewall firewall add rule name="Block UDP Port 1111" protocol=UDP dir=
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Sunucu başlatma
-<<<<<<< HEAD
-/*
-netsh advfirewall firewall add rule name="Kapat1111" dir=in action=block protocol=TCP localport=1111
-netstat -ano | findstr :1111
-
- */
-const port = 1111;
-app.listen(port, () => {
-  console.log(`Sunucu ${port} portunda çalışıyor http://localhost:${port}`);
-  logger.info(`Sunucu ${port} portunda çalışıyor http://localhost:${port}`); //logger: Winston
-=======
 const PORT = process.env.LOCALHOST_PORT || 1111;
 app.listen(PORT, () => {
   console.log(`Sunucu ${PORT} portunda çalışıyor http://localhost:${PORT}`);
   logger.info(`Sunucu ${PORT} portunda çalışıyor http://localhost:${PORT}`); //logger: Winston
->>>>>>> origin/main
 });

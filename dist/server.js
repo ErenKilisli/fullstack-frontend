@@ -213,7 +213,7 @@ app.get("/", (req, res) => {
 });
 // Formu render eden rota ("/")
 // Anasayfaya yönlendir.
-app.get("/blog/api", csrfProtection, (request, response) => {
+app.get("/blog", csrfProtection, (request, response) => {
     // İstek gövdesinde JSON(Javascript Object Notation) formatında veri göndereceğini belirtir.
     //response.setHeader("Content-Type", "application/json");
     //response.setHeader("Content-Type", "text/plain"); // name Hamit surnameMızrak
@@ -243,7 +243,7 @@ app.get("/blog/api", csrfProtection, (request, response) => {
 // DİKKATT: Eğer  blog_api_routes.js post kısmında event.preventDefault(); kapatırsam buraki kodlar çalışır.
 // blog için CSRF koruması eklenmiş POST işlemi
 // app.post("/blog", csrfProtection, (request, response) => {
-app.post("/blog/api", csrfProtection, (request, response) => {
+app.post("/", csrfProtection, (request, response) => {
     const blogData = {
         header: request.body.header,
         content: request.body.content,
@@ -289,7 +289,7 @@ app.set("view engine", "ejs");
 const blogRoutes = require("../routes/blog_api_routes");
 const { request } = require("http");
 // http://localhost:1111/blog
-app.use("/blog/", blogRoutes);
+app.use("/blog/api", blogRoutes);
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 404 Hata sayfası
@@ -315,8 +315,8 @@ netsh advfirewall firewall add rule name="Block UDP Port 1111" protocol=UDP dir=
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Sunucu başlatma
-const port = 1111;
-app.listen(port, () => {
-    console.log(`Sunucu ${port} portunda çalışıyor http://localhost:${port}`);
-    logger.info(`Sunucu ${port} portunda çalışıyor http://localhost:${port}`); //logger: Winston
+const PORT = process.env.LOCALHOST_PORT || 1111;
+app.listen(PORT, () => {
+    console.log(`Sunucu ${PORT} portunda çalışıyor http://localhost:${PORT}`);
+    logger.info(`Sunucu ${PORT} portunda çalışıyor http://localhost:${PORT}`); //logger: Winston
 });
